@@ -1,0 +1,28 @@
+{
+  "name": "creepy-crawler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/treknuts/creepy-crawler.git"
+  },
+  "author": "Trevor Knutson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/treknuts/creepy-crawler/issues"
+  },
+  "homepage": "https://github.com/treknuts/creepy-crawler#readme",
+  "dependencies": {
+    "aws-sdk": "^2.790.0",
+    "axios": "^0.21.0",
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.17.1",
+    "helmet": "^4.2.0",
+    "uuid": "^8.3.1"
+  }
+}
