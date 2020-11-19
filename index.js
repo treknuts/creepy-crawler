@@ -3,6 +3,24 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const url = "https://www.crawler-test.com";
 
+const sites = [
+  "http://www.freecodecamp.org",
+  "http://www.stackoverflow.com",
+  "http://www.codecademy.com/catalog",
+  "http://www.w3schools.com",
+  "http://www.edx.org",
+];
+
+/*
+ * table: pages
+ * id: int
+ * description: string
+ * keywords: string - space separated list of keywords
+ * link: string
+ */
+
+// Only crawl pages that are about programming.
+
 /*
  * Workflow
  * 1. Create a list of pages to scrape
@@ -19,12 +37,13 @@ fetchData(url).then((res) => {
   const html = res.data;
   const $ = cheerio.load(html);
   const links = $("a");
-  links.filter("canonical").attr("rel");
+  // links.filter("canonical").attr("rel");
   links.each((i, el) => {
     queue[i] = $(el).attr("href");
   });
+  // debugging
   // console.log(queue.join("\n"));
-  console.log($("*").html());
+  // console.log($("*").html());
 });
 
 async function fetchData(url) {
