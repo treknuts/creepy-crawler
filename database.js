@@ -1,35 +1,43 @@
-const AWS = require("aws-sdk");
-const config = require("./../../../.aws/config.js");
-const uuid = require("uuid");
+const { MongoClient } = require("mongodb");
+const fs = require("fs");
+const dbname = "noogledb";
+const uri =
+  "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false";
 
-const addPage = function (request, response) {
-  AWS.config.update(config.aws_remote_config);
-  const docClient = new AWS.DynamoDB.DocumentClient();
-  const Item = { ...request.body };
-  Item.id = uuid();
-  var params = {
-    TableName: config.aws_table_name,
-    Item: Item,
-  };
+async function getPages(uri) {
+  MongoClient.connect(uri, { useUnifiedTopology: true }, function (err, db) {
+    if (err) console.log(err);
 
-  docClient.put(params, function (err, data) {
-    if (err) {
-      response.send({
-        success: false,
-        message: err,
+    var dbo = db.db(dbname);
+
+    dbo
+      .collection("pages")
+      .find({})
+      .toArray(function (err, result) {
+        if (err) console.log(err);
+        console.log(result);
+        db.close();
       });
-    } else {
-      response.send({
-        success: true,
-        message: "Page added successfully!",
-        page: data,
-      });
-    }
   });
-};
+}
 
-module.exports = {
-  addPage,
-};
+async function getPage(uri, name) {}
 
-addPage();
+// Call this once to insert the pages into your local database instance
+async function insertPages(uri) {
+  var raw = fs.readFileSync("pages.json");
+  var pages = JSON.parse(raw);
+
+  MongoClient.connect(uri, { useUnifiedTopology: true }, function (err, db) {
+    if (err) console.log(err);
+
+    var dbo = db.db(dbname);
+
+    dbo.collection("pages").insertMany(pages, function (err, res) {
+      if (err) throw err;
+
+      console.log(`Successfully inserted ${res.insertedCount} documents!`);
+      db.close();
+    });
+  });
+}

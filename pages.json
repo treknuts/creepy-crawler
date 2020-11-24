@@ -1,0 +1,87 @@
+[
+  {
+    "name": "Stack Overflow",
+    "description": "Where Developers Learn, Share, & Build",
+    "url": "http://www.stackoverflow.com",
+    "keywords": [
+      "amazon web services",
+      "array",
+      "loop",
+      "java",
+      "javascript",
+      "python",
+      "software",
+      "web development",
+      "php",
+      "stackoverflow"
+    ]
+  },
+  {
+    "name": "Codecademy",
+    "description": "Learn to Code - for Free",
+    "url": "http://www.codecademy.com",
+    "keywords": [
+      "amazon web services",
+      "array",
+      "loop",
+      "java",
+      "javascript",
+      "python",
+      "software",
+      "web development",
+      "php",
+      "codecademy"
+    ]
+  },
+  {
+    "name": "freeCodeCamp.org",
+    "description": "Learn to code at home",
+    "url": "http://www.freecodecamp.org",
+    "keywords": [
+      "amazon web services",
+      "array",
+      "loop",
+      "java",
+      "javascript",
+      "python",
+      "software",
+      "web development",
+      "php",
+      "freecodecamp"
+    ]
+  },
+  {
+    "name": "W3Schools",
+    "description": "Online Web Tutorials",
+    "url": "http://www.w3schools.com",
+    "keywords": [
+      "amazon web services",
+      "array",
+      "loop",
+      "java",
+      "javascript",
+      "python",
+      "software",
+      "web development",
+      "php",
+      "w3schools"
+    ]
+  },
+  {
+    "name": "edX",
+    "description": "Free Online Courses by Harvard, MIT, & more | edX",
+    "url": "http://www.edx.com",
+    "keywords": [
+      "amazon web services",
+      "array",
+      "loop",
+      "java",
+      "javascript",
+      "python",
+      "software",
+      "web development",
+      "php",
+      "edx"
+    ]
+  }
+]
