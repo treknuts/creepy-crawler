@@ -1,8 +1,9 @@
 const { MongoClient } = require("mongodb");
 const fs = require("fs");
+require("dotenv").config();
+
 const dbname = "noogledb";
-const uri =
-  "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false";
+const uri = process.env.MONGO_URI;
 
 async function getPages(uri) {
   MongoClient.connect(uri, { useUnifiedTopology: true }, function (err, db) {
