@@ -118,67 +118,31 @@ function magnitude(vec) {
   return Math.sqrt(sum);
 }
 
-const similaritiesFromText = (query, documents) => {};
+const generateDocumentVectors = (documents) => {
+  var freqMap = [];
+  documents.forEach((doc) => {
+    freqMap.push(wordCountMap(doc));
+  });
+  return freqMap;
+};
 
-var query = "How much wood does the wood chuck chuck";
-
-var document1 =
-  "If a wood chuck could chuck wood would a wood chuck wood chuck wood";
-
-var document2 = "The quick brown fox does some shit";
-
-var document3 = "A wood chipper chips wood";
-
-var documents = [document1, document2, document3];
-
-var vocabulary = getVocabulary(documents);
-
-var freqMap = [];
-documents.forEach((doc) => {
-  freqMap.push(wordCountMap(doc));
-});
-
-// console.log("Document term frequencies: ", freqMap);
-
-idf = calculateIdf(documents, vocabulary);
-
-var queryMap = wordCountMap(query);
-var queryVec = {};
-for (const word in queryMap) {
-  queryVec[word] = queryMap[word] === 1 ? 1 : queryMap[word] * idf[word];
+function similaritiesFromText(query, documents) {
+  var vocabulary = getVocabulary(documents);
+  var freqMap = generateDocumentVectors(documents);
+  idf = calculateIdf(documents, vocabulary);
+  var queryMap = wordCountMap(query);
+  var queryVec = {};
+  for (const word in queryMap) {
+    queryVec[word] = queryMap[word] === 1 ? 1 : queryMap[word] * idf[word];
+  }
+  tfidf = calculateTfIdf(freqMap, idf);
+  similarities = [];
+  tfidf.forEach((vec) => {
+    similarities.push(Math.round(cosineSimilarity(queryVec, vec) * 100));
+  });
+  return similarities;
 }
 
-tfidf = calculateTfIdf(freqMap, idf);
-
-var docMagnitudes = [];
-tfidf.forEach((vec) => {
-  docMagnitudes.push(magnitude(vec));
-});
-
-var dotProducts = [];
-tfidf.forEach((vec) => {
-  dotProducts.push(dotProduct(queryVec, vec));
-});
-
-similarities = [];
-tfidf.forEach((vec) => {
-  similarities.push(Math.round(cosineSimilarity(queryVec, vec) * 100));
-});
-
-console.log("Query vector: ", queryVec);
-console.log("Document vectors: ", freqMap);
-console.log("TFIDF Matrix: ", calculateTfIdf(freqMap, idf));
-console.log("Dot products: ", dotProducts);
-console.log("Query magnitude: ", magnitude(queryVec));
-console.log("Document magnitudes", docMagnitudes);
-console.log("Similarities", similarities);
-
-// const comparator = require("string-similarity");
-
-// var matches = comparator.findBestMatch(query, documents);
-
-// console.log("Search matches: ", matches);
-
-// matches.ratings.sort((a, b) => (a.rating > b.rating ? -1 : 1));
-
-// console.log("Sorted matches: ", matches);
+module.exports = {
+  similaritiesFromText: similaritiesFromText,
+};
