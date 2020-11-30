@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
+const textProcessor = require("./textprocessor");
 
 const app = express();
 
@@ -52,7 +53,26 @@ app.all("/", (req, res) => {
   }
 });
 
+const document1 =
+  "If a wood chuck could chuck wood would a wood chuck wood chuck wood";
+
+const document2 = "The quick brown fox does some shit";
+
+const document3 = "A wood chipper chips wood";
+
+const documents = [document1, document2, document3];
+
 app.get("/search", (req, res) => {
+  const query = req.body.query;
+  const weightsObj = textProcessor.similaritiesFromText(query, documents);
+  const data = [];
+  for (obj in weightsObj) {
+    data.push(documents[obj]);
+  }
   res.status(200);
-  res.json({ success: true, message: `Searched for ${req.body.query}` });
+  res.json({
+    success: true,
+    message: `Searched for ${req.body.query}`,
+    data: data,
+  });
 });

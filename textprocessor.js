@@ -24,10 +24,6 @@ const count = (arr, word) => {
   return count;
 };
 
-const calculateWeight = () => {
-  // weight = tf * idf
-};
-
 function wordCountMap(str) {
   let words = str.toLowerCase().split(" ");
   let wordCount = {};
@@ -37,20 +33,6 @@ function wordCountMap(str) {
     }
   });
   return wordCount;
-}
-
-function addWordsToDictionary(wordCountmap, dict) {
-  for (let key in wordCountmap) {
-    dict[key] = true;
-  }
-}
-
-function wordMapToVector(map, dict) {
-  let wordCountVector = [];
-  for (let term in dict) {
-    wordCountVector.push(map[term] || 0);
-  }
-  return wordCountVector;
 }
 
 const normTermFreq = (word, document) => {
@@ -109,9 +91,6 @@ function dotProduct(vecA, vecB) {
 
 function magnitude(vec) {
   let sum = 0;
-  // for (let i = 0; i < vec.length; i++) {
-  //   sum += vec[i] * vec[i];
-  // }
   for (const word in vec) {
     sum += vec[word] * vec[word];
   }
@@ -136,9 +115,10 @@ function similaritiesFromText(query, documents) {
     queryVec[word] = queryMap[word] === 1 ? 1 : queryMap[word] * idf[word];
   }
   tfidf = calculateTfIdf(freqMap, idf);
-  similarities = [];
-  tfidf.forEach((vec) => {
-    similarities.push(Math.round(cosineSimilarity(queryVec, vec) * 100));
+  similarities = {};
+  tfidf.forEach((vec, i) => {
+    similarities[i] = Math.round(cosineSimilarity(queryVec, vec) * 100);
+    i++;
   });
   return similarities;
 }

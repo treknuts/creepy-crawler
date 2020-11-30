@@ -15,18 +15,7 @@ function crawl(pages, search) {
   });
 }
 
-var query = "How much wood does the wood chuck chuck";
-
-var document1 =
-  "If a wood chuck could chuck wood would a wood chuck wood chuck wood";
-
-var document2 = "The quick brown fox does some shit";
-
-var document3 = "A wood chipper chips wood";
-
-var documents = [document1, document2, document3];
-
-sims = textProcessor.similaritiesFromText(query, documents);
-console.log(sims);
+// sims = textProcessor.similaritiesFromText(query, documents);
+// console.log(sims);
 
 // crawl(sites);
