@@ -1,21 +1,31 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const { response } = require("express");
 const db = require("./database");
-const textProcessor = require("./preprocessor");
+const fs = require("fs");
+require("dotenv").config();
 
-function crawl(pages, search) {
+const uri = process.env.MONGO_URI;
+
+const maxDepth = 3;
+
+const data = {};
+
+function crawl(pages, search, depth) {
+  /*
+   * 1) Store the html of the first 10 links for each page
+   */
+
   pages.forEach((page) => {
     axios(page)
       .then((res) => {
         const html = res.data;
         const $ = cheerio.load(html);
-        console.log(`${page} - ${$("title").text()}`);
       })
       .catch((err) => console.log(err));
   });
 }
 
-// sims = textProcessor.similaritiesFromText(query, documents);
-// console.log(sims);
+const pages = fs.readFileSync("pages.json", { encoding: "utf-8" });
 
-// crawl(sites);
+crawl(JSON.parse(pages), "blah");

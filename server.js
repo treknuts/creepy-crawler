@@ -12,20 +12,6 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With, Content-Type, Accept"
-  );
-
-  next();
-});
-
 app.options("*", function (req, res) {
   res.send(200);
 });
@@ -34,7 +20,7 @@ server.listen(port, (err) => {
   if (err) {
     throw err;
   }
-  console.log("Node endpoints working :)");
+  console.log("Node server running at http://localhost:3000 :)");
 });
 
 app.all("/", (req, res) => {
@@ -65,6 +51,7 @@ const documents = [document1, document2, document3];
 app.get("/search", (req, res) => {
   const query = req.body.query;
   const weightsObj = textProcessor.similaritiesFromText(query, documents);
+  console.log(weightsObj);
   const data = [];
   for (obj in weightsObj) {
     data.push(documents[obj]);

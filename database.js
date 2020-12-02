@@ -1,5 +1,6 @@
 const { MongoClient } = require("mongodb");
 const fs = require("fs");
+const { json } = require("body-parser");
 require("dotenv").config();
 
 const dbname = "noogledb";
@@ -16,8 +17,9 @@ async function getPages(uri) {
       .find({})
       .toArray(function (err, result) {
         if (err) console.log(err);
-        console.log(result);
+        // console.log(result);
         db.close();
+        return result;
       });
   });
 }
@@ -37,8 +39,12 @@ async function insertPages(uri) {
     dbo.collection("pages").insertMany(pages, function (err, res) {
       if (err) throw err;
 
-      console.log(`Successfully inserted ${res.insertedCount} documents!`);
+      // console.log(`Successfully inserted ${res.insertedCount} documents!`);
       db.close();
     });
   });
 }
+
+module.exports = {
+  getPages: getPages,
+};
