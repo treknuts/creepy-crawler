@@ -44,9 +44,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var request = require('request');
-var cheerio = require('cheerio');
-var URL = require('url-parse');
+var request = require("request");
+var cheerio = require("cheerio");
+var URL = require("url-parse");
 const db = require("./database");
 const fs = require("fs");
 
@@ -61,65 +61,64 @@ var numPagesVisited = 0;
 var pagesToVisit = [];
 
 pages.forEach((page) => {
-  page.files.forEach((file) => {
-    pagesToVisit.push(page.baseUrl + file);
-  });
+  // page.files.forEach((file) => {
+  //   pagesToVisit.push(page.baseUrl + file);
+  // });
+  pagesToVisit.push(page);
 });
 
-console.log(pagesToVisit);
+// console.log(pagesToVisit);
 
 crawl();
 
 function crawl() {
-  if(numPagesVisited >= MAX_PAGES_TO_VISIT) {
+  if (numPagesVisited >= MAX_PAGES_TO_VISIT) {
     console.log("Reached max limit of number of pages to visit.");
     return;
   }
   var nextPage = pagesToVisit.pop();
-  console.log(pagesToVisit);
   if (nextPage in pagesVisited) {
     // We've already visited this page, so repeat the crawl
     crawl();
   } else {
     // New page we haven't visited
-    visitPage(nextPage, crawl);
+    console.log(nextPage);
+    nextPage.files.forEach((file) => {
+      console.log(nextPage.baseUrl + file);
+      visitPage(nextPage, nextPage.baseUrl + file, crawl);
+    });
+    // visitPage(page.baseUrl, crawl);
   }
 }
 
-function visitPage(page, callback) {
+function visitPage(page, url, callback) {
   // Add page to our set
-  pagesVisited[page.baseUrl] = true;
+  pagesVisited[url] = true;
   numPagesVisited++;
   // Make the request
-  console.log("Visiting page " + page.baseUrl);
-  request(page.baseUrl, function(error, response, body) {
-     // Check status code (200 is HTTP OK)
-     console.log("Status code: " + response.statusCode);
-     if(response.statusCode !== 200) {
-       callback();
-       return;
-     }
-     
-     // Parse the document body
-     var $ = cheerio.load(body);
-      var obj = {
-        url: page.baseUrl,
-        title: page.name,
-        description: page.description,
-      };
-      const pageData = $("*").text();
-      obj["pageData"] = pageData;
-      data.push(obj);
-     collectInternalLinks(page, $);
+  console.log("Visiting page " + url);
+  request(url, function (error, response, body) {
+    // Check status code (200 is HTTP OK)
+    console.log("Status code: " + response.statusCode);
+    if (response.statusCode !== 200) {
+      callback();
+      return;
+    }
+
+    // Parse the document body
+    var $ = cheerio.load(body);
+
+    const pageData = $("*").text();
+    collectInternalLinks(page, $);
   });
   crawl();
 }
 
 function collectInternalLinks(page, $) {
-    var relativeLinks = $("a[href^='/']");
-    console.log("Found " + relativeLinks.length + " relative links on page");
-    relativeLinks.each(function() {
-        // pagesToVisit.push(baseUrl + $(this).attr('href'));
-        page.files.push(page);
-    });
+  var relativeLinks = $("a[href^='/']");
+  console.log("Found " + relativeLinks.length + " relative links on page");
+  relativeLinks.each((file) => {
+    // pagesToVisit.push(baseUrl + $(this).attr('href'));
+    page.files.push(file);
+  });
 }
