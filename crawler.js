@@ -87,7 +87,6 @@ function crawl() {
       console.log(nextPage.baseUrl + file);
       visitPage(nextPage, nextPage.baseUrl + file, crawl);
     });
-    // visitPage(page.baseUrl, crawl);
   }
 }
 
@@ -115,10 +114,16 @@ function visitPage(page, url, callback) {
 }
 
 function collectInternalLinks(page, $) {
-  var relativeLinks = $("a[href^='/']");
-  console.log("Found " + relativeLinks.length + " relative links on page");
-  relativeLinks.each((file) => {
+  var relativeLinks = $("a"); // $("a[href^='/']");
+  console.log(
+    "Found " + relativeLinks.length + " relative links on " + page.baseUrl
+  );
+  relativeLinks.each((idx, file) => {
     // pagesToVisit.push(baseUrl + $(this).attr('href'));
-    page.files.push(file);
+    var fileToAdd = file.attribs["href"];
+    if (fileToAdd && fileToAdd.startsWith("/")) {
+      page.files.push(fileToAdd);
+      console.log(idx + ":" + fileToAdd);
+    }
   });
 }
