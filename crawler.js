@@ -3,36 +3,50 @@ var cheerio = require("cheerio");
 const db = require("./database");
 const fs = require("fs");
 
-const data = [];
+const data = {};
 
 const pages = JSON.parse(fs.readFileSync("pages.json", { encoding: "utf-8" }));
 
-var MAX_PAGES_TO_VISIT = 4;
+var MAX_PAGES_TO_VISIT = 10;
 
 var pagesVisited = {};
 var numPagesVisited = 0;
 var pagesToVisit = [];
 
-pages.forEach((page) => {
-  pagesToVisit.push(page);
-});
+const getPages = (pages) => {
+  pages.forEach((page) => {
+    pagesToVisit.push(page);
+  });
+};
+
+// pages.forEach((page) => {
+//   page.files.forEach((file) => {
+//     pagesToVisit.push(file);
+//   });
+//   // pagesToVisit.push(page);
+// });
 
 crawl();
 
 function crawl() {
+  getPages(pages);
   if (numPagesVisited >= MAX_PAGES_TO_VISIT) {
     console.log("Reached max limit of number of pages to visit.");
     return;
   }
-  var nextPage = pagesToVisit.pop();
+  var nextPage = pagesToVisit.shift();
   if (nextPage in pagesVisited) {
     // We've already visited this page, so repeat the crawl
     crawl();
   } else {
     // New page we haven't visited
+
+    // THIS LOOP ISN'T WORKING
     nextPage.files.forEach((file) => {
-      visitPage(nextPage, nextPage.baseUrl + file, crawl);
+      if (!pagesVisited[nextPage.baseUrl + file])
+        visitPage(nextPage, nextPage.baseUrl + file, crawl);
     });
+    console.log(data);
   }
 }
 
@@ -54,6 +68,8 @@ function visitPage(page, url, callback) {
     var $ = cheerio.load(body);
 
     const pageData = $("*").text();
+    // THIS ISN'T WORKING!!!!
+    data[url] = pageData;
     collectInternalLinks(page, $);
   });
   crawl();
@@ -67,6 +83,6 @@ function collectInternalLinks(page, $) {
   relativeLinks.each((idx, file) => {
     var fileToAdd = file.attribs["href"];
     page.files.push(fileToAdd);
-    console.log(fileToAdd);
   });
+  pagesToVisit.push(page);
 }
