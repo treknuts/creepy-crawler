@@ -12,12 +12,6 @@
     "files": ["/"]
   },
   {
-    "name": "freeCodeCamp.org",
-    "description": "Learn to code at home",
-    "baseUrl": "http://www.freecodecamp.org",
-    "files": ["/"]
-  },
-  {
     "name": "W3Schools",
     "description": "Online Web Tutorials",
     "baseUrl": "http://www.w3schools.com",
