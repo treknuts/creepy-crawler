@@ -4,8 +4,10 @@ var URL = require("url-parse");
 const fs = require("fs");
 
 const pages = JSON.parse(fs.readFileSync("pages.json", { encoding: "utf-8" }));
-var data = gatherPageData();
-console.log(data);
+
+var dataFinal = [];
+gatherPageData();
+console.log(dataFinal);
 
 function gatherPageData() {
   var data = [];
@@ -20,7 +22,7 @@ function gatherPageData() {
     var baseUrl = url.protocol + "//" + url.hostname;
 
     pagesToVisit.push(START_URL);
-    var data = crawl();
+    crawl();
 
     function crawl() {
       if (numPagesVisited >= MAX_PAGES_TO_VISIT) {
@@ -34,6 +36,12 @@ function gatherPageData() {
       } else {
         // New page we haven't visited
         visitPage(nextPage, crawl);
+      }
+      // console.log(data);
+      // dataFinal.push(data);
+      dataFinal = data;
+      if(dataFinal.length > 0){
+        console.log("Final Data: ", dataFinal);
       }
     }
 

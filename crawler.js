@@ -7,7 +7,7 @@ const data = {};
 
 const pages = JSON.parse(fs.readFileSync("pages.json", { encoding: "utf-8" }));
 
-var MAX_PAGES_TO_VISIT = 10;
+var MAX_PAGES_TO_VISIT = 100;
 
 var pagesVisited = {};
 var numPagesVisited = 0;
@@ -46,7 +46,6 @@ function crawl() {
       if (!pagesVisited[nextPage.baseUrl + file])
         visitPage(nextPage, nextPage.baseUrl + file, crawl);
     });
-    console.log(data);
   }
 }
 
@@ -68,9 +67,10 @@ function visitPage(page, url, callback) {
     var $ = cheerio.load(body);
 
     const pageData = $("*").text();
-    // THIS ISN'T WORKING!!!!
+    
     data[url] = pageData;
     collectInternalLinks(page, $);
+    //console.log(data);  ///////////////////////////////////////////////////////////////////////////////////////////////////
   });
   crawl();
 }
