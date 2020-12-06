@@ -1,88 +1,49 @@
-var request = require("request");
-var cheerio = require("cheerio");
-const db = require("./database");
-const fs = require("fs");
+const axios = require("axios");
+const cheerio = require("cheerio");
+const pages = ["http://www.w3schools.com", "http://www.arstechnica.com"];
 
-const data = {};
+const MAX_PAGES = 10;
+let data = [];
 
-const pages = JSON.parse(fs.readFileSync("pages.json", { encoding: "utf-8" }));
+async function crawl(url) {
+  try {
+    const results = await axios.get(url);
 
-var MAX_PAGES_TO_VISIT = 100;
+    if (results.status === 200) {
+      const $ = cheerio.load(results.data, {
+        xml: {
+          normalizeWhitespace: true,
+        },
+      });
 
-var pagesVisited = {};
-var numPagesVisited = 0;
-var pagesToVisit = [];
+      await collectInternalLinks($, url);
 
-const getPages = (pages) => {
-  pages.forEach((page) => {
-    pagesToVisit.push(page);
-  });
-};
-
-// pages.forEach((page) => {
-//   page.files.forEach((file) => {
-//     pagesToVisit.push(file);
-//   });
-//   // pagesToVisit.push(page);
-// });
-
-crawl();
-
-function crawl() {
-  getPages(pages);
-  if (numPagesVisited >= MAX_PAGES_TO_VISIT) {
-    console.log("Reached max limit of number of pages to visit.");
-    return;
-  }
-  var nextPage = pagesToVisit.shift();
-  if (nextPage in pagesVisited) {
-    // We've already visited this page, so repeat the crawl
-    crawl();
-  } else {
-    // New page we haven't visited
-
-    // THIS LOOP ISN'T WORKING
-    nextPage.files.forEach((file) => {
-      if (!pagesVisited[nextPage.baseUrl + file])
-        visitPage(nextPage, nextPage.baseUrl + file, crawl);
-    });
-  }
-}
-
-function visitPage(page, url, callback) {
-  // Add page to our set
-  pagesVisited[url] = true;
-  numPagesVisited++;
-  // Make the request
-  console.log("Visiting page " + url);
-  request(url, function (error, response, body) {
-    // Check status code (200 is HTTP OK)
-    console.log("Status code: " + response.statusCode);
-    if (response.statusCode !== 200) {
-      callback();
-      return;
+      let obj = {
+        url: url,
+        title: $("title").text(),
+        pageData: $("body").text().trim().toLowerCase(),
+      };
+      data.push(obj);
     }
-
-    // Parse the document body
-    var $ = cheerio.load(body);
-
-    const pageData = $("*").text();
-    
-    data[url] = pageData;
-    collectInternalLinks(page, $);
-    //console.log(data);  ///////////////////////////////////////////////////////////////////////////////////////////////////
-  });
-  crawl();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-function collectInternalLinks(page, $) {
+async function collectInternalLinks($, url) {
   var relativeLinks = $("a[href^='/']");
-  console.log(
-    "Found " + relativeLinks.length + " relative links on " + page.baseUrl
-  );
-  relativeLinks.each((idx, file) => {
-    var fileToAdd = file.attribs["href"];
-    page.files.push(fileToAdd);
+  console.log("Found " + relativeLinks.length + " relative links on page");
+  relativeLinks.each(function () {
+    pages.push(url + $(this).attr("href"));
   });
-  pagesToVisit.push(page);
 }
+
+async function getData() {
+  var i;
+  for (i = 0; i < MAX_PAGES; i++) {
+    await crawl(pages[i]);
+  }
+  console.log(data.length);
+}
+
+getData();

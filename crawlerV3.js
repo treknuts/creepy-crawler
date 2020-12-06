@@ -6,11 +6,16 @@ const fs = require("fs");
 const pages = JSON.parse(fs.readFileSync("pages.json", { encoding: "utf-8" }));
 
 var dataFinal = [];
-gatherPageData();
+
+const gatherPageData = async () => {
+  const data = await doTheShit();
+  return data;
+};
+
+console.log(gatherPageData());
 console.log(dataFinal);
 
-function gatherPageData() {
-  var data = [];
+function doTheShit() {
   pages.forEach((page) => {
     var START_URL = page.baseUrl;
     var MAX_PAGES_TO_VISIT = 10;
@@ -39,10 +44,10 @@ function gatherPageData() {
       }
       // console.log(data);
       // dataFinal.push(data);
-      dataFinal = data;
-      if(dataFinal.length > 0){
-        console.log("Final Data: ", dataFinal);
-      }
+      //   dataFinal = data;
+      //   if (dataFinal.length > 0) {
+      //     console.log("Final Data: ", dataFinal);
+      //   }
     }
 
     function visitPage(url, callback) {
@@ -79,5 +84,4 @@ function gatherPageData() {
       });
     }
   });
-  return data;
 }
