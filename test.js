@@ -1,14 +1,6 @@
-const data = [];
+const getData = require("./crawler.js");
+const crawler = require("./crawler.js");
 
-const second = async () => {
-  data[0] = 32;
-  await first();
-  console.log(data);
-};
-
-const first = async () => {
-  console.log("I should always run first.");
-  for (var i = 0; i < 10; i++) data[i] = i;
-};
-
-second();
+(async () => {
+  console.log(await getData());
+})();

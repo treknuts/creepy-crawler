@@ -26,7 +26,7 @@ async function crawl(url) {
       data.push(obj);
     }
   } catch (err) {
-    console.log(err);
+    console.log("Oopsies! Response status wasn't 200 :(");
   }
 }
 
@@ -43,7 +43,12 @@ async function getData() {
   for (i = 0; i < MAX_PAGES; i++) {
     await crawl(pages[i]);
   }
-  console.log(data.length);
+  return data;
 }
 
-getData();
+// USE THIS TO GET DATA OUT OF ASYNC FUNCTION
+// (async () => {
+//   console.log(await getData());
+// })();
+
+module.exports = getData;
