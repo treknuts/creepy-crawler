@@ -19,7 +19,8 @@ pages.forEach((page) => {
   var baseUrl = url.protocol + "//" + url.hostname;
 
   pagesToVisit.push(START_URL);
-  crawl();
+  var pageData = crawl();
+  console.log(pageData);
 
   function crawl() {
     if (numPagesVisited >= MAX_PAGES_TO_VISIT) {
@@ -34,7 +35,8 @@ pages.forEach((page) => {
       // New page we haven't visited
       visitPage(nextPage, crawl);
     }
-    console.log(data);
+    // console.log(data);
+    return data;
   }
 
   function visitPage(url, callback) {

@@ -5,12 +5,9 @@ const stopWords = ["a", "an", "of", "or", "and", "the"];
 const getVocabulary = (documents) => {
   var unique = [];
   documents.forEach((doc) => {
-    doc
-      .toLowerCase()
-      .split(" ")
-      .forEach((w) => {
-        if (!unique.includes(w) && !stopWords.includes(w)) unique.push(w);
-      });
+    doc["pageData"].split(" ").forEach((w) => {
+      if (!unique.includes(w) && !stopWords.includes(w)) unique.push(w);
+    });
   });
   return unique;
 };
@@ -100,12 +97,13 @@ function magnitude(vec) {
 const generateDocumentVectors = (documents) => {
   var freqMap = [];
   documents.forEach((doc) => {
-    freqMap.push(wordCountMap(doc));
+    freqMap.push(wordCountMap(doc["pageData"]));
   });
   return freqMap;
 };
 
 function similaritiesFromText(query, documents) {
+  console.log(documents.length);
   var vocabulary = getVocabulary(documents);
   var freqMap = generateDocumentVectors(documents);
   idf = calculateIdf(documents, vocabulary);
