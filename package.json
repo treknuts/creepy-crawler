@@ -24,6 +24,7 @@
     "express": "^4.17.1",
     "helmet": "^4.2.0",
     "mongodb": "^3.6.3",
+    "mysql": "^2.18.1",
     "request": "^2.88.2",
     "string-similarity": "^4.0.3",
     "url-parse": "^1.4.7",

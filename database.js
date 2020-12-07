@@ -1,50 +1,65 @@
-const { MongoClient } = require("mongodb");
-const fs = require("fs");
+const mysql = require("mysql");
 const { json } = require("body-parser");
 require("dotenv").config();
 
-const dbname = "noogledb";
-const uri = process.env.MONGO_URI;
+const host = process.env.DB_HOST;
+const db = process.env.DB_NAME;
+const user = process.env.DB_USERNAME;
+const password = process.env.DB_PASSWORD;
 
-async function getPages(uri) {
-  MongoClient.connect(uri, { useUnifiedTopology: true }, function (err, db) {
-    if (err) console.log(err);
+const table = "pages";
 
-    var dbo = db.db(dbname);
+var connection = mysql.createConnection({
+  host: host,
+  user: user,
+  password: password,
+  database: db,
+});
 
-    dbo
-      .collection("pages")
-      .find({})
-      .toArray(function (err, result) {
-        if (err) console.log(err);
-        // console.log(result);
-        db.close();
-        return result;
-      });
+connection.connect(function (err) {
+  if (err) throw err;
+
+  console.log("Connected Successfully!");
+});
+
+/*
+ * pages
+ * ----------------------------------------------------------------------
+ * |           |                  |                |                    |
+ * | id -> int | title -> varchar | url -> varchar | page_text -> text  |
+ * |           |                  |                |                    |
+ * ----------------------------------------------------------------------
+ */
+
+/*
+ * Example full-text query
+ * SELECT url FROM test WHERE MATCH(page_text) AGAINST ('jumped brown fox' IN NATURAL LANGUAGE MODE);
+ */
+
+function insertPage(pageObj) {
+  var sql = `INSERT INTO ${table} (url, title, content) VALUES (${connection.escape(
+    pageObj["url"]
+  )}, ${connection.escape(pageObj["title"])}, ${connection.escape(
+    pageObj["content"]
+  )})`;
+  connection.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log(`Inserted ${pageObj["url"]} successfully!`);
   });
 }
 
-async function getPage(uri, name) {}
+async function getResults(query) {
+  var sql = `SELECT id, url, title, MATCH(content) AGAINST (${connection.escape(
+    query
+  )} IN NATURAL LANGUAGE MODE) AS score FROM pages ORDER BY score DESC;`;
 
-// Call this once to insert the pages into your local database instance
-async function insertPages(uri) {
-  var raw = fs.readFileSync("pages.json");
-  var pages = JSON.parse(raw);
-
-  MongoClient.connect(uri, { useUnifiedTopology: true }, function (err, db) {
-    if (err) console.log(err);
-
-    var dbo = db.db(dbname);
-
-    dbo.collection("pages").insertMany(pages, function (err, res) {
-      if (err) throw err;
-
-      // console.log(`Successfully inserted ${res.insertedCount} documents!`);
-      db.close();
-    });
+  connection.query(sql, function (err, result) {
+    if (err) throw err;
+    return result;
   });
 }
 
 module.exports = {
-  getPages: getPages,
+  insertPage: insertPage,
+  getResults: getResults,
 };
