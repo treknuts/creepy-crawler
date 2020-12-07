@@ -1,10 +1,8 @@
-const getData = require("./crawler.js");
-const { getResults } = require("./database.js");
 const db = require("./database.js");
 
 (async () => {
   const query = "python for loop";
-  const results = await getResults(query);
+  const results = await db.getResults(query);
   console.log("Query results", results);
 })();
 

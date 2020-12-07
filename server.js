@@ -1,51 +1,37 @@
-const express = require("express");
 const bodyParser = require("body-parser");
-const helmet = require("helmet");
-const textProcessor = require("./textprocessor");
+const express = require("express");
+require("dotenv").config();
+const { getResults } = require("./database.js");
+
+const host = process.env.DB_HOST;
+const db = process.env.DB_NAME;
+const user = process.env.DB_USERNAME;
+const password = process.env.DB_PASSWORD;
+
+const dbConfig = {
+  host: host,
+  database: db,
+  user: user,
+  password: password,
+};
 
 const app = express();
-
-const server = require("http").Server(app);
 const port = 3000;
 
-app.use(helmet());
+async function dbResults(results) {
+  finalResults = results;
+}
+
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-app.options("*", function (req, res) {
-  res.send(200);
+var finalResults;
+
+app.get("/search", async (req, res) => {
+  var search = req.body.query;
+  await getResults(search, dbResults);
+  res.json(finalResults);
 });
 
-server.listen(port, (err) => {
-  if (err) {
-    throw err;
-  }
-  console.log("Node server running at http://localhost:3000 :)");
-});
-
-app.all("/", (req, res) => {
-  if (req.method === "GET") {
-    res.status(200);
-    res.json({ working: true });
-    res.end();
-  } else if (req.method === "POST") {
-    res.status(200);
-    res.send("working");
-    res.end();
-  } else if (req.method === "PUT") {
-    res.status(200);
-    res.send("working");
-    res.end();
-  }
-});
-
-app.get("/search", (req, res) => {
-  const query = req.body.query;
-
-  res.status(200);
-  res.json({
-    success: true,
-    message: `Searched for ${req.body.query}`,
-    data: data,
-  });
+app.listen(port, () => {
+  console.log("Server listening on port", port);
 });

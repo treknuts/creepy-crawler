@@ -1,5 +1,4 @@
 const mysql = require("mysql");
-const { json } = require("body-parser");
 require("dotenv").config();
 
 const host = process.env.DB_HOST;
@@ -22,20 +21,6 @@ connection.connect(function (err) {
   console.log("Connected Successfully!");
 });
 
-/*
- * pages
- * ----------------------------------------------------------------------
- * |           |                  |                |                    |
- * | id -> int | title -> varchar | url -> varchar | page_text -> text  |
- * |           |                  |                |                    |
- * ----------------------------------------------------------------------
- */
-
-/*
- * Example full-text query
- * SELECT url FROM test WHERE MATCH(page_text) AGAINST ('jumped brown fox' IN NATURAL LANGUAGE MODE);
- */
-
 function insertPage(pageObj) {
   var sql = `INSERT INTO ${table} (url, title, content) VALUES (${connection.escape(
     pageObj["url"]
@@ -48,14 +33,18 @@ function insertPage(pageObj) {
   });
 }
 
-async function getResults(query) {
+async function getResults(query, callback) {
+  console.log("Searched for:", query);
   var sql = `SELECT id, url, title, MATCH(content) AGAINST (${connection.escape(
     query
   )} IN NATURAL LANGUAGE MODE) AS score FROM pages ORDER BY score DESC;`;
 
   connection.query(sql, function (err, result) {
     if (err) throw err;
-    return result;
+
+    if (callback) {
+      callback(result);
+    }
   });
 }
 
