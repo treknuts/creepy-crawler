@@ -28,16 +28,16 @@ function insertPage(pageObj) {
     pageObj["content"]
   )})`;
   connection.query(sql, function (err, result) {
-    if (err) throw err;
+    // if (err) throw err;
     console.log(`Inserted ${pageObj["url"]} successfully!`);
   });
 }
 
 async function getResults(query, callback) {
-  console.log("Searched for:", query);
-  var sql = `SELECT id, url, title, MATCH(content) AGAINST (${connection.escape(
+  console.log("Query", query);
+  var sql = `SELECT id, url, title, MATCH(title, content) AGAINST (${connection.escape(
     query
-  )} IN NATURAL LANGUAGE MODE) AS score FROM pages ORDER BY score DESC;`;
+  )} IN NATURAL LANGUAGE MODE) AS score FROM pages ORDER BY score DESC LIMIT 0, 50;`;
 
   connection.query(sql, function (err, result) {
     if (err) throw err;
